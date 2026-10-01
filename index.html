@@ -189,6 +189,21 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .check { list-style: none; padding-left: 0 !important; }
 .check li { display: flex; gap: 10px; align-items: flex-start; }
 .check li::before { content: ""; flex: none; width: 20px; height: 20px; margin-top: 5px; border: 2px solid var(--accent); border-radius: 6px; }
+
+/* 成長ステージのカード */
+.stages { display: flex; flex-direction: column; gap: 10px; margin: 0 0 16px; }
+.stage { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
+.stage.key { border: 2px solid var(--accent); padding: 13px 15px; }
+.stage .nm { font-weight: 700; font-size: 17px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.key-tag { font-size: 12px; line-height: 1; background: var(--accent); color: var(--surface); padding: 5px 9px; border-radius: 999px; letter-spacing: .04em; }
+.stage .nums { display: flex; flex-wrap: wrap; gap: 2px 16px; margin: 4px 0 6px; font-variant-numeric: tabular-nums; }
+.stage .nums b { color: var(--accent); font-size: 20px; }
+.stage p { margin: 0; color: var(--ink-sub); font-size: 16px; }
+h4.crop { font-family: var(--font-display); font-size: 19px; line-height: 1.4; margin: 26px 0 8px; }
+.memo-body li > ol { margin: 8px 0 0; }
+
+/* 日本語を、文節の区切りで折り返す(対応していない端末では、いつも通りに折り返す) */
+.memo-head h2, .row .t, .memo-body h3, h4.crop { word-break: auto-phrase; }
 </style>
 
 </head>
@@ -211,70 +226,78 @@ var INTERESTS = [
     note: '土を使わず、水と培養液で野菜を育てる',
     memos: [
       {
-        id: 'h1', date: '2026-10-01', tag: '入門',
-        title: 'レタスの水耕栽培を始める手順',
-        summary: '最初の一株を育てるまでの流れと、そろえるもの',
-        body:
-          '<h3>そろえるもの</h3>' +
-          '<ul>' +
-          '<li>容器(光を通さない色のもの。藻の発生をおさえられます)</li>' +
-          '<li>スポンジ、または育苗用のキューブ</li>' +
-          '<li>レタスの種(リーフレタスが育てやすいです)</li>' +
-          '<li>水耕栽培用の液体肥料(2液タイプまたは1液タイプ)</li>' +
-          '<li>LEDの植物育成ライト(窓辺で足りる場合は不要)</li>' +
-          '</ul>' +
-          '<h3>育て方の流れ</h3>' +
-          '<ol>' +
-          '<li><strong>種をまく</strong>:水を含ませたスポンジに、種を2〜3粒のせます。</li>' +
-          '<li><strong>発芽させる</strong>:暗めの場所に置きます。2〜3日で芽が出ます。</li>' +
-          '<li><strong>光に当てる</strong>:芽が出たらすぐ明るい場所へ移します。暗いままだと、ひょろ長く育ちます。</li>' +
-          '<li><strong>培養液を入れる</strong>:本葉が出たころから、うすめた培養液を使います。</li>' +
-          '<li><strong>定植する</strong>:根が伸びたら、容器にスポンジごと移します。</li>' +
-          '</ol>' +
-          '<div class="tip"><b>ポイント</b><br>根の全部を水に浸けないでください。根の上のほうは空気に触れさせます。根も呼吸をしているからです。</div>' +
-          '<h3>収穫まで</h3>' +
-          '<p>リーフレタスは、種まきから約5〜6週間が収穫の目安です。外側の葉からつみ取ると、長く楽しめます。</p>'
-      },
-      {
-        id: 'h2', date: '2026-10-01', tag: '数値',
-        title: '培養液の濃さ(EC)と酸度(pH)の目安',
-        summary: '数字で管理するときの、ふだんの確認ポイント',
-        body:
-          '<p>培養液の状態は、<strong>EC(濃さ)</strong>と<strong>pH(酸度)</strong>の二つの数字で見ます。どちらも安価な測定器があります。</p>' +
-          '<h3>レタスの目安</h3>' +
-          '<div class="spec"><table>' +
-          '<tr><th>EC</th><td>1.0〜1.5 mS/cm くらい</td></tr>' +
-          '<tr><th>pH</th><td>5.5〜6.5 くらい</td></tr>' +
-          '<tr><th>水温</th><td>18〜22℃ くらい</td></tr>' +
-          '<tr><th>液の交換</th><td>1〜2週間に1回</td></tr>' +
-          '</table></div>' +
-          '<p>数値は商品や品種によって変わります。使う肥料の袋に書かれた倍率を、まず優先してください。</p>' +
-          '<h3>見るときのコツ</h3>' +
-          '<ul>' +
-          '<li>ECが高すぎると、葉の先が傷みやすくなります。</li>' +
-          '<li>ECが低すぎると、育ちが遅くなり、葉の色がうすくなります。</li>' +
-          '<li>水温が25℃を超える夏は、根が傷みやすくなります。日かげに置くか、容器を冷やします。</li>' +
-          '<li>減った分は、肥料入りの液ではなく、まず水を足します。</li>' +
-          '</ul>'
-      },
-      {
-        id: 'h3', date: '2026-10-01', tag: 'トラブル',
-        title: 'よくあるトラブルと対処',
-        summary: '緑の藻、根ぐされ、ひょろ長い苗への対応',
-        body:
-          '<h3>水が緑色になる</h3>' +
-          '<p>光が容器に当たって、藻が増えています。容器を遮光するか、不透明なものに替えます。液も入れ替えます。</p>' +
-          '<h3>根がぬめる、においがする</h3>' +
-          '<p>根ぐされの疑いがあります。水温が高いか、酸素が足りない状態です。</p>' +
-          '<ul>' +
-          '<li>液をすべて交換し、容器を洗います。</li>' +
-          '<li>いたんだ根を、清潔なはさみで切ります。</li>' +
-          '<li>エアーポンプで酸素を送ると、予防になります。</li>' +
-          '</ul>' +
-          '<h3>苗がひょろ長い</h3>' +
-          '<p>光が足りません。ライトを近づけるか、1日の照射を12〜14時間にします。</p>' +
-          '<h3>下の葉が黄色くなる</h3>' +
-          '<p>肥料不足か、古い葉の自然な入れ替わりです。ECを確かめ、低ければ少し濃くします。</p>'
+        id: 'h-light', date: '2026-10-01', tag: '光量',
+        title: '室内水耕栽培の光量ガイド(照度・lux目安)',
+        summary: '時期別・野菜別の必要照度と、スマホでの測り方',
+        body: `
+<h3>成長ステージ別の必要光量</h3>
+<p>全野菜に共通する目安です。</p>
+<div class="stages">
+  <div class="stage">
+    <div class="nm">発芽前(種まき)</div>
+    <div class="nums"><span><b>0〜暗所</b></span><span>ライト不要</span></div>
+    <p>乾燥を防ぐことが最優先。光を好まない種もあります。</p>
+  </div>
+  <div class="stage key">
+    <div class="nm">発芽直後(発芽〜幼苗) <span class="key-tag">一番重要</span></div>
+    <div class="nums"><span><b>5,000〜10,000 lx</b></span><span>ライトまで 5〜10 cm(超至近距離)</span></div>
+    <p>緑の芽が出た瞬間に至近距離へ。徒長(間延び)を強力に防ぎます。</p>
+  </div>
+  <div class="stage">
+    <div class="nm">定着〜本葉展開期</div>
+    <div class="nums"><span><b>8,000〜15,000 lx</b></span><span>ライトまで 10〜15 cm</span></div>
+    <p>本葉が増えてきたら少し距離を保ちつつ、光量をしっかり与えます。</p>
+  </div>
+  <div class="stage">
+    <div class="nm">収穫期・収穫継続</div>
+    <div class="nums"><span><b>10,000〜20,000 lx</b></span><span>ライトまで 10〜20 cm</span></div>
+    <p>株全体に光が当たるよう調整。実ものや大型の野菜は多めに照らします。</p>
+  </div>
+</div>
+
+<h3>野菜別の必要光量</h3>
+
+<h4 class="crop">1. えんどう豆(さやナイン)</h4>
+<div class="spec"><table>
+<tr><th>必要光量</th><td><strong>15,000〜20,000 lux</strong>(強め)</td></tr>
+<tr><th>照射時間</th><td>1日 12〜14時間</td></tr>
+</table></div>
+<p><strong>管理のコツ</strong>:ツルが伸ばして背が高くなるため、成長に合わせてライトの高さをこまめに上げていきます。コンロガードなどの反射板を囲むと下の方の葉までしっかり光が届きます。</p>
+
+<h4 class="crop">2. 二十日大根(ラディッシュ)</h4>
+<div class="spec"><table>
+<tr><th>必要光量</th><td><strong>10,000〜15,000 lux</strong>(中〜強)</td></tr>
+<tr><th>照射時間</th><td>1日 12〜14時間</td></tr>
+</table></div>
+<p><strong>管理のコツ</strong>:根っこ(株元)をしっかり太らせるために初期からの強い光が必須です。光が足りないと根が膨らまず、葉っぱばかり伸びてしまいます。</p>
+
+<h4 class="crop">3. レタス・水菜・ルッコラ・雪菜(葉物類)</h4>
+<div class="spec"><table>
+<tr><th>必要光量</th><td><strong>8,000〜12,000 lux</strong>(標準)</td></tr>
+<tr><th>照射時間</th><td>1日 12〜14時間</td></tr>
+</table></div>
+<p><strong>管理のコツ</strong>:室内水耕栽培で最も成功しやすいグループです。発芽直後の5〜10cmキープさえ守れば、手頃なLEDライトでもシャキシャキに育ちます。</p>
+
+<h4 class="crop">4. ふだん草(スイスチャード)</h4>
+<div class="spec"><table>
+<tr><th>必要光量</th><td><strong>8,000〜12,000 lux</strong>(標準)</td></tr>
+<tr><th>照射時間</th><td>1日 12時間</td></tr>
+</table></div>
+<p><strong>管理のコツ</strong>:発芽までに1週間近くかかりますが、発芽してからの光量要求度は標準的です。色鮮やかな茎を楽しむためにもしっかり光を当てましょう。</p>
+
+<h3>スマホアプリでの測定・運用の黄金ルール</h3>
+<ul>
+<li><strong>単位の設定</strong>:アプリの表示を「FC」ではなく「lux(ルクス)」に設定します。</li>
+<li><strong>測定方法</strong>:芽や葉の「いちばん上の高さ」にスマホを置き、センサー(上部インカメラ付近)をライトに向けて計測します。</li>
+<li><strong>足りない場合の裏技</strong>
+<ol>
+<li>ライトをあと <strong>2〜3cm 近づける</strong>(距離を縮めるのが一番効きます)。</li>
+<li>周囲に<strong>アルミコンロガード</strong>を立てて光を全反射させる。</li>
+<li>照射時間を少し長め(14〜16時間)にする。</li>
+</ol>
+</li>
+</ul>
+`
       }
     ]
   },
@@ -283,7 +306,7 @@ var INTERESTS = [
     note: '木工や、暮らしの道具づくり',
     memos: [
       {
-        id: 'd1', date: '2026-10-01', tag: '材料',
+        id: 'd1', sample: true, date: '2026-10-01', tag: '材料',
         title: '木材の種類と使い分け',
         summary: 'ホームセンターで選ぶときの、早見メモ',
         body:
@@ -301,7 +324,7 @@ var INTERESTS = [
           '<div class="tip"><b>ポイント</b><br>まっすぐな木を選ぶために、店で端から目を通して、反りやねじれを確かめます。</div>'
       },
       {
-        id: 'd2', date: '2026-10-01', tag: '道具',
+        id: 'd2', sample: true, date: '2026-10-01', tag: '道具',
         title: 'ビスの選び方と下穴の目安',
         summary: '木が割れないようにするための、ひと手間',
         body:
@@ -322,7 +345,7 @@ var INTERESTS = [
           '</ul>'
       },
       {
-        id: 'd3', date: '2026-10-01', tag: '準備',
+        id: 'd3', sample: true, date: '2026-10-01', tag: '準備',
         title: '棚を作る前のチェックリスト',
         summary: '買い物に行く前に、見直すこと',
         body:
@@ -372,7 +395,7 @@ function renderHome() {
   return '<div class="view">' +
     '<header class="home-head"><h1>メモの宝箱</h1><p>いま気になっていること</p></header>' +
     '<div class="tiles">' + tiles + '</div>' +
-    '<p class="foot-note">いまのメモは、見本のダミーです。</p>' +
+    '<p class="foot-note">DIYのメモは、見本のダミーです。</p>' +
     '</div>';
 }
 
@@ -394,7 +417,7 @@ function renderMemo(it, m) {
     barHtml(it.name, 'interest', '') +
     '<article>' +
     '<header class="memo-head"><div class="chips"><span class="chip">' + esc(m.tag) + '</span>' +
-    '<span class="chip plain">' + fmtDate(m.date) + '</span><span class="chip plain">見本</span></div>' +
+    '<span class="chip plain">' + fmtDate(m.date) + '</span>' + (m.sample ? '<span class="chip plain">見本</span>' : '') + '</div>' +
     '<h2>' + esc(m.title) + '</h2></header>' +
     '<div class="memo-body">' + m.body + '</div></article></div>';
 }
