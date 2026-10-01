@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>メモの宝箱</title>
+<meta name="theme-color" content="#187A5C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="メモの宝箱">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<style>
+:root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+[hidden] { display: none !important; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+/* 構成: ホーム(興味のタイル) → メモ一覧 → メモ本文。一画面ずつ切り替える、片手操作向けの縦長レイアウト */
+:root {
+  --bg: #EEF3F0;
+  --surface: #FFFFFF;
+  --ink: #16241E;
+  --ink-sub: #4D5F57;
+  --line: #D3DED8;
+  --hydro: #187A5C;
+  --hydro-soft: #DCEFE7;
+  --diy: #B5651A;
+  --diy-soft: #F6E6D2;
+  --accent: var(--hydro);
+  --accent-soft: var(--hydro-soft);
+  --font-display: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Noto Sans JP", sans-serif;
+  --font-body: "BIZ UDPGothic", "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101A16;
+    --surface: #18251F;
+    --ink: #E6F0EA;
+    --ink-sub: #9FB3A9;
+    --line: #2A3B33;
+    --hydro: #5CCBA2;
+    --hydro-soft: #1B3A2E;
+    --diy: #EBA45E;
+    --diy-soft: #3F2C17;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101A16;
+  --surface: #18251F;
+  --ink: #E6F0EA;
+  --ink-sub: #9FB3A9;
+  --line: #2A3B33;
+  --hydro: #5CCBA2;
+  --hydro-soft: #1B3A2E;
+  --diy: #EBA45E;
+  --diy-soft: #3F2C17;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.8;
+  padding-inline: 16px;
+  padding-block: 0 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+.wrap { max-width: 40rem; margin-inline: auto; }
+[data-k="hydro"] { --accent: var(--hydro); --accent-soft: var(--hydro-soft); }
+[data-k="diy"] { --accent: var(--diy); --accent-soft: var(--diy-soft); }
+
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
+
+/* 上のバー */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 64px;
+  border-bottom: 1px solid var(--line);
+  margin-inline: -16px;
+  padding-inline: 12px;
+}
+.bar .inner { width: 100%; max-width: 40rem; margin-inline: auto; display: flex; align-items: center; gap: 8px; }
+.back {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 48px; padding: 0 14px 0 8px;
+  border: 0; background: transparent;
+  color: var(--accent); font-weight: 700; font-size: 17px;
+  border-radius: 12px;
+}
+.back svg { width: 24px; height: 24px; }
+.bar-title { font-family: var(--font-display); font-weight: 700; font-size: 18px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 画面切り替え */
+.view { animation: rise .22s ease-out; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .view { animation: none; } }
+
+/* ホーム */
+.home-head { padding-block: 32px 20px; }
+.home-head h1 { font-family: var(--font-display); font-size: 30px; line-height: 1.3; margin: 0; letter-spacing: .02em; }
+.home-head p { margin: 6px 0 0; color: var(--ink-sub); font-size: 16px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+.tile {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
+  text-align: left;
+  padding: 20px 18px 18px;
+  min-height: 190px;
+  background: var(--accent-soft);
+  border: 2px solid transparent;
+  border-radius: 24px;
+  color: var(--ink);
+  transition: border-color .15s, transform .15s;
+}
+.tile:hover { border-color: var(--accent); }
+.tile:active { transform: scale(.98); }
+.tile svg { width: 72px; height: 72px; color: var(--accent); }
+.tile .name { font-family: var(--font-display); font-weight: 700; font-size: 24px; line-height: 1.25; }
+.tile .count { color: var(--ink-sub); font-size: 15px; margin-top: auto; }
+.tile-text { display: flex; flex-direction: column; gap: 2px; margin-top: auto; }
+.foot-note { margin-top: 28px; color: var(--ink-sub); font-size: 14px; }
+
+/* メモ一覧 */
+.list-head { display: flex; align-items: center; gap: 14px; padding-block: 24px 14px; }
+.list-head svg { width: 52px; height: 52px; color: var(--accent); flex: none; }
+.list-head h2 { font-family: var(--font-display); font-size: 26px; margin: 0; line-height: 1.3; }
+.list-head p { margin: 0; color: var(--ink-sub); font-size: 15px; }
+.rows { display: flex; flex-direction: column; gap: 10px; padding: 0; margin: 0; list-style: none; }
+.row {
+  width: 100%;
+  display: flex; align-items: center; gap: 12px;
+  text-align: left;
+  padding: 16px 14px 16px 18px;
+  min-height: 84px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+.row:hover { border-color: var(--accent); }
+.row:active { background: var(--accent-soft); }
+.row .txt { flex: 1; min-width: 0; }
+.row .t { font-weight: 700; font-size: 18px; line-height: 1.5; display: block; }
+.row .s { display: block; color: var(--ink-sub); font-size: 14px; line-height: 1.6; margin-top: 2px; }
+.row svg { width: 22px; height: 22px; color: var(--accent); flex: none; }
+
+/* メモ本文 */
+.memo-head { padding-block: 24px 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.chip { font-size: 13px; line-height: 1; padding: 7px 11px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 700; letter-spacing: .04em; }
+.chip.plain { background: transparent; border: 1px solid var(--line); color: var(--ink-sub); font-weight: 400; }
+.memo-head h2 { font-family: var(--font-display); font-size: 27px; line-height: 1.4; margin: 0; text-wrap: balance; }
+.memo-lead { color: var(--ink-sub); margin: 10px 0 0; }
+.memo-body { padding-block: 8px 24px; }
+.memo-body h3 {
+  font-family: var(--font-display);
+  font-size: 21px; line-height: 1.4;
+  margin: 34px 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--accent-soft);
+}
+.memo-body p { margin: 0 0 14px; }
+.memo-body ul, .memo-body ol { margin: 0 0 14px; padding-left: 1.4em; }
+.memo-body li { margin-bottom: 6px; }
+.memo-body li::marker { color: var(--accent); font-weight: 700; }
+.memo-body strong { background: linear-gradient(transparent 62%, var(--accent-soft) 62%); }
+.spec { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; overflow-x: auto; margin: 0 0 16px; }
+.spec table { border-collapse: collapse; width: 100%; font-size: 16px; line-height: 1.6; }
+.spec th, .spec td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.spec tr:last-child th, .spec tr:last-child td { border-bottom: 0; }
+.spec th { color: var(--accent); font-weight: 700; white-space: nowrap; }
+.spec td { font-variant-numeric: tabular-nums; }
+.tip { background: var(--accent-soft); border-radius: 16px; padding: 14px 16px; margin: 0 0 16px; }
+.tip b { color: var(--accent); }
+.check { list-style: none; padding-left: 0 !important; }
+.check li { display: flex; gap: 10px; align-items: flex-start; }
+.check li::before { content: ""; flex: none; width: 20px; height: 20px; margin-top: 5px; border: 2px solid var(--accent); border-radius: 6px; }
+</style>
+
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ---------------------------------------------------------------
+   メモのデータ。ここに興味とメモを足していきます。
+   (いまのメモは見本のダミーです)
+---------------------------------------------------------------- */
+var ICON_HYDRO = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 52V30"/><path d="M32 36C32 25 25 20 15 20c0 11 7 16 17 16Z"/><path d="M32 31c0-10 7-15 17-15 0 10-7 15-17 15Z"/><path d="M8 56q6-5 12 0t12 0t12 0t12 0"/></svg>';
+var ICON_DIY = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="rotate(45 32 32)"><rect x="29" y="24" width="6" height="34" rx="2.5"/><rect x="17" y="10" width="30" height="12" rx="3"/></g></svg>';
+var ICON_BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
+var ICON_NEXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
+
+var INTERESTS = [
+  {
+    id: 'hydro', name: '水耕栽培', icon: ICON_HYDRO,
+    note: '土を使わず、水と培養液で野菜を育てる',
+    memos: [
+      {
+        id: 'h1', date: '2026-10-01', tag: '入門',
+        title: 'レタスの水耕栽培を始める手順',
+        summary: '最初の一株を育てるまでの流れと、そろえるもの',
+        body:
+          '<h3>そろえるもの</h3>' +
+          '<ul>' +
+          '<li>容器(光を通さない色のもの。藻の発生をおさえられます)</li>' +
+          '<li>スポンジ、または育苗用のキューブ</li>' +
+          '<li>レタスの種(リーフレタスが育てやすいです)</li>' +
+          '<li>水耕栽培用の液体肥料(2液タイプまたは1液タイプ)</li>' +
+          '<li>LEDの植物育成ライト(窓辺で足りる場合は不要)</li>' +
+          '</ul>' +
+          '<h3>育て方の流れ</h3>' +
+          '<ol>' +
+          '<li><strong>種をまく</strong>:水を含ませたスポンジに、種を2〜3粒のせます。</li>' +
+          '<li><strong>発芽させる</strong>:暗めの場所に置きます。2〜3日で芽が出ます。</li>' +
+          '<li><strong>光に当てる</strong>:芽が出たらすぐ明るい場所へ移します。暗いままだと、ひょろ長く育ちます。</li>' +
+          '<li><strong>培養液を入れる</strong>:本葉が出たころから、うすめた培養液を使います。</li>' +
+          '<li><strong>定植する</strong>:根が伸びたら、容器にスポンジごと移します。</li>' +
+          '</ol>' +
+          '<div class="tip"><b>ポイント</b><br>根の全部を水に浸けないでください。根の上のほうは空気に触れさせます。根も呼吸をしているからです。</div>' +
+          '<h3>収穫まで</h3>' +
+          '<p>リーフレタスは、種まきから約5〜6週間が収穫の目安です。外側の葉からつみ取ると、長く楽しめます。</p>'
+      },
+      {
+        id: 'h2', date: '2026-10-01', tag: '数値',
+        title: '培養液の濃さ(EC)と酸度(pH)の目安',
+        summary: '数字で管理するときの、ふだんの確認ポイント',
+        body:
+          '<p>培養液の状態は、<strong>EC(濃さ)</strong>と<strong>pH(酸度)</strong>の二つの数字で見ます。どちらも安価な測定器があります。</p>' +
+          '<h3>レタスの目安</h3>' +
+          '<div class="spec"><table>' +
+          '<tr><th>EC</th><td>1.0〜1.5 mS/cm くらい</td></tr>' +
+          '<tr><th>pH</th><td>5.5〜6.5 くらい</td></tr>' +
+          '<tr><th>水温</th><td>18〜22℃ くらい</td></tr>' +
+          '<tr><th>液の交換</th><td>1〜2週間に1回</td></tr>' +
+          '</table></div>' +
+          '<p>数値は商品や品種によって変わります。使う肥料の袋に書かれた倍率を、まず優先してください。</p>' +
+          '<h3>見るときのコツ</h3>' +
+          '<ul>' +
+          '<li>ECが高すぎると、葉の先が傷みやすくなります。</li>' +
+          '<li>ECが低すぎると、育ちが遅くなり、葉の色がうすくなります。</li>' +
+          '<li>水温が25℃を超える夏は、根が傷みやすくなります。日かげに置くか、容器を冷やします。</li>' +
+          '<li>減った分は、肥料入りの液ではなく、まず水を足します。</li>' +
+          '</ul>'
+      },
+      {
+        id: 'h3', date: '2026-10-01', tag: 'トラブル',
+        title: 'よくあるトラブルと対処',
+        summary: '緑の藻、根ぐされ、ひょろ長い苗への対応',
+        body:
+          '<h3>水が緑色になる</h3>' +
+          '<p>光が容器に当たって、藻が増えています。容器を遮光するか、不透明なものに替えます。液も入れ替えます。</p>' +
+          '<h3>根がぬめる、においがする</h3>' +
+          '<p>根ぐされの疑いがあります。水温が高いか、酸素が足りない状態です。</p>' +
+          '<ul>' +
+          '<li>液をすべて交換し、容器を洗います。</li>' +
+          '<li>いたんだ根を、清潔なはさみで切ります。</li>' +
+          '<li>エアーポンプで酸素を送ると、予防になります。</li>' +
+          '</ul>' +
+          '<h3>苗がひょろ長い</h3>' +
+          '<p>光が足りません。ライトを近づけるか、1日の照射を12〜14時間にします。</p>' +
+          '<h3>下の葉が黄色くなる</h3>' +
+          '<p>肥料不足か、古い葉の自然な入れ替わりです。ECを確かめ、低ければ少し濃くします。</p>'
+      }
+    ]
+  },
+  {
+    id: 'diy', name: 'DIY', icon: ICON_DIY,
+    note: '木工や、暮らしの道具づくり',
+    memos: [
+      {
+        id: 'd1', date: '2026-10-01', tag: '材料',
+        title: '木材の種類と使い分け',
+        summary: 'ホームセンターで選ぶときの、早見メモ',
+        body:
+          '<p>初めての工作では、手に入りやすく加工しやすい木から選ぶと失敗が少ないです。</p>' +
+          '<h3>よく使う木材</h3>' +
+          '<div class="spec"><table>' +
+          '<tr><th>SPF材</th><td>安くてやわらかい。2×4(ツーバイフォー)材が代表です。</td></tr>' +
+          '<tr><th>杉</th><td>軽くて切りやすい。やや傷つきやすいです。</td></tr>' +
+          '<tr><th>ヒノキ</th><td>香りがよく、水に強め。杉より少し高めです。</td></tr>' +
+          '<tr><th>合板</th><td>板状で大きい面をつくれます。棚板や背板に向きます。</td></tr>' +
+          '<tr><th>集成材</th><td>反りにくい。棚板やテーブルの天板に向きます。</td></tr>' +
+          '</table></div>' +
+          '<h3>サイズの呼び方</h3>' +
+          '<p>2×4材の実際の大きさは、約38×89mmです。呼び名の「2インチ×4インチ」より、小さくなっています。</p>' +
+          '<div class="tip"><b>ポイント</b><br>まっすぐな木を選ぶために、店で端から目を通して、反りやねじれを確かめます。</div>'
+      },
+      {
+        id: 'd2', date: '2026-10-01', tag: '道具',
+        title: 'ビスの選び方と下穴の目安',
+        summary: '木が割れないようにするための、ひと手間',
+        body:
+          '<h3>ビスの長さの目安</h3>' +
+          '<p>ビスの長さは、<strong>とめる側の板の厚みの2倍以上</strong>が基本です。たとえば厚さ19mmの板をとめるなら、38mm前後のビスを選びます。</p>' +
+          '<h3>下穴をあける</h3>' +
+          '<p>板の端に近い所や、かたい木は、下穴をあけないと割れやすくなります。</p>' +
+          '<ul>' +
+          '<li>下穴の太さは、ビスの軸の太さより少し細いものが目安です。</li>' +
+          '<li>かたい木ほど、下穴は太めにします。</li>' +
+          '<li>端から、ビスの太さの3〜5倍は離すと割れにくくなります。</li>' +
+          '</ul>' +
+          '<h3>あると便利なもの</h3>' +
+          '<ul>' +
+          '<li>下穴用のドリルビット</li>' +
+          '<li>さらもみ(頭を沈める)ビット</li>' +
+          '<li>クランプ(板を押さえる道具)</li>' +
+          '</ul>'
+      },
+      {
+        id: 'd3', date: '2026-10-01', tag: '準備',
+        title: '棚を作る前のチェックリスト',
+        summary: '買い物に行く前に、見直すこと',
+        body:
+          '<p>作りはじめる前に、次の点を確かめておくと、手戻りが減ります。</p>' +
+          '<ul class="check">' +
+          '<li>置く場所の幅・高さ・奥行きを、メジャーで測った</li>' +
+          '<li>何をのせるか決めた(本、鉢、道具など)</li>' +
+          '<li>のせるものの重さを、おおよそ見積もった</li>' +
+          '<li>木材の寸法を、紙に書き出した</li>' +
+          '<li>切る長さを、店のカットサービスに頼めるか確かめた</li>' +
+          '<li>ビス、やすり、塗料を、買い物リストに入れた</li>' +
+          '<li>作業する場所と、床の養生を用意した</li>' +
+          '</ul>' +
+          '<div class="tip"><b>ポイント</b><br>重いものをのせる棚は、板の長さが長いほどたわみます。真ん中に支えを一本足すと、安心です。</div>'
+      }
+    ]
+  }
+];
+
+/* ---------------------------------------------------------------
+   画面の切り替え
+---------------------------------------------------------------- */
+var app = document.getElementById('app');
+var state = { view: 'home', interest: null, memo: null };
+
+function find(id) {
+  for (var i = 0; i < INTERESTS.length; i++) if (INTERESTS[i].id === id) return INTERESTS[i];
+  return null;
+}
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+  });
+}
+function fmtDate(s) {
+  var p = s.split('-');
+  return p[0] + '年' + Number(p[1]) + '月' + Number(p[2]) + '日';
+}
+
+function renderHome() {
+  var tiles = INTERESTS.map(function (it) {
+    return '<button class="tile" data-k="' + it.id + '" data-go="interest" data-id="' + it.id + '">' +
+      it.icon +
+      '<span class="tile-text"><span class="name">' + esc(it.name) + '</span>' +
+      '<span class="count">メモ ' + it.memos.length + '件</span></span></button>';
+  }).join('');
+  return '<div class="view">' +
+    '<header class="home-head"><h1>メモの宝箱</h1><p>いま気になっていること</p></header>' +
+    '<div class="tiles">' + tiles + '</div>' +
+    '<p class="foot-note">いまのメモは、見本のダミーです。</p>' +
+    '</div>';
+}
+
+function renderList(it) {
+  var rows = it.memos.map(function (m) {
+    return '<li><button class="row" data-go="memo" data-id="' + m.id + '">' +
+      '<span class="txt"><span class="t">' + esc(m.title) + '</span>' +
+      '<span class="s">' + esc(m.summary) + '</span></span>' + ICON_NEXT + '</button></li>';
+  }).join('');
+  return '<div class="view" data-k="' + it.id + '">' +
+    barHtml('ホーム', 'home', it.name) +
+    '<div class="list-head">' + it.icon +
+    '<div><h2>' + esc(it.name) + '</h2><p>' + esc(it.note) + '</p></div></div>' +
+    '<ul class="rows">' + rows + '</ul></div>';
+}
+
+function renderMemo(it, m) {
+  return '<div class="view" data-k="' + it.id + '">' +
+    barHtml(it.name, 'interest', '') +
+    '<article>' +
+    '<header class="memo-head"><div class="chips"><span class="chip">' + esc(m.tag) + '</span>' +
+    '<span class="chip plain">' + fmtDate(m.date) + '</span><span class="chip plain">見本</span></div>' +
+    '<h2>' + esc(m.title) + '</h2></header>' +
+    '<div class="memo-body">' + m.body + '</div></article></div>';
+}
+
+function barHtml(backLabel, go, title) {
+  return '<div class="bar"><div class="inner">' +
+    '<button class="back" data-go="' + go + '">' + ICON_BACK + esc(backLabel) + '</button>' +
+    (title ? '<span class="bar-title">' + esc(title) + '</span>' : '') +
+    '</div></div>';
+}
+
+function render() {
+  var it = state.interest ? find(state.interest) : null;
+  if (state.view === 'memo' && it) {
+    var m = null;
+    for (var i = 0; i < it.memos.length; i++) if (it.memos[i].id === state.memo) m = it.memos[i];
+    if (m) { app.innerHTML = renderMemo(it, m); }
+    else { state.view = 'interest'; render(); return; }
+  } else if (state.view === 'interest' && it) {
+    app.innerHTML = renderList(it);
+  } else {
+    state = { view: 'home', interest: null, memo: null };
+    app.innerHTML = renderHome();
+  }
+  window.scrollTo(0, 0);
+}
+
+function go(view, id) {
+  if (view === 'interest' && id) state.interest = id;
+  if (view === 'memo') state.memo = id;
+  state.view = view;
+  try { history.pushState({ v: state.view, i: state.interest, m: state.memo }, ''); } catch (e) {}
+  render();
+}
+
+app.addEventListener('click', function (e) {
+  var el = e.target.closest('[data-go]');
+  if (!el) return;
+  go(el.getAttribute('data-go'), el.getAttribute('data-id'));
+});
+
+/* スマホの「戻る」操作にも対応 */
+window.addEventListener('popstate', function (e) {
+  var s = e.state;
+  if (s) state = { view: s.v, interest: s.i, memo: s.m };
+  else state = { view: 'home', interest: null, memo: null };
+  render();
+});
+try { history.replaceState({ v: 'home', i: null, m: null }, ''); } catch (e) {}
+
+render();
+
+/* オフラインでも開けるようにする */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function () {});
+  });
+}
+</script>
+</body>
+</html>

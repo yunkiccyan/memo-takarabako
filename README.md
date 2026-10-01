@@ -1,1 +1,6 @@
-# memo-takarabako
+# メモの宝箱
+
+自分専用のメモ帳アプリです。スマホのホーム画面に追加して使います。
+
+- `index.html` : アプリ本体(メモの内容もここにあります)
+- `manifest.webmanifest`, `sw.js`, `icon-*.png` : ホーム画面に追加するための設定
