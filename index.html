@@ -31,6 +31,8 @@ body { margin: 0; }
   --hydro-soft: #DCEFE7;
   --diy: #B5651A;
   --diy-soft: #F6E6D2;
+  --trouble: #3B5BA5;
+  --trouble-soft: #E0E7F5;
   --accent: var(--hydro);
   --accent-soft: var(--hydro-soft);
   --font-display: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Noto Sans JP", sans-serif;
@@ -47,6 +49,8 @@ body { margin: 0; }
     --hydro-soft: #1B3A2E;
     --diy: #EBA45E;
     --diy-soft: #3F2C17;
+    --trouble: #8FAAE8;
+    --trouble-soft: #212F4D;
     color-scheme: dark;
   }
 }
@@ -60,6 +64,8 @@ body { margin: 0; }
   --hydro-soft: #1B3A2E;
   --diy: #EBA45E;
   --diy-soft: #3F2C17;
+  --trouble: #8FAAE8;
+  --trouble-soft: #212F4D;
   color-scheme: dark;
 }
 
@@ -77,6 +83,7 @@ body {
 .wrap { max-width: 40rem; margin-inline: auto; }
 [data-k="hydro"] { --accent: var(--hydro); --accent-soft: var(--hydro-soft); }
 [data-k="diy"] { --accent: var(--diy); --accent-soft: var(--diy-soft); }
+[data-k="trouble"] { --accent: var(--trouble); --accent-soft: var(--trouble-soft); }
 
 button { font: inherit; color: inherit; cursor: pointer; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
@@ -203,7 +210,7 @@ h4.crop { font-family: var(--font-display); font-size: 19px; line-height: 1.4; m
 .memo-body li > ol { margin: 8px 0 0; }
 
 /* 日本語を、文節の区切りで折り返す(対応していない端末では、いつも通りに折り返す) */
-.memo-head h2, .row .t, .memo-body h3, h4.crop { word-break: auto-phrase; }
+.memo-head h2, .row .t, .memo-body h3, h4.crop, .tile .name { word-break: auto-phrase; }
 </style>
 
 </head>
@@ -217,6 +224,7 @@ h4.crop { font-family: var(--font-display); font-size: 19px; line-height: 1.4; m
 ---------------------------------------------------------------- */
 var ICON_HYDRO = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 52V30"/><path d="M32 36C32 25 25 20 15 20c0 11 7 16 17 16Z"/><path d="M32 31c0-10 7-15 17-15 0 10-7 15-17 15Z"/><path d="M8 56q6-5 12 0t12 0t12 0t12 0"/></svg>';
 var ICON_DIY = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="rotate(45 32 32)"><rect x="29" y="24" width="6" height="34" rx="2.5"/><rect x="17" y="10" width="30" height="12" rx="3"/></g></svg>';
+var ICON_TROUBLE = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 7l20 8v17c0 12-8.500 21-20 25C20.500 53 12 44 12 32V15z"/><path d="M23 32l6 6 12-13"/></svg>';
 var ICON_BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
 var ICON_NEXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 
@@ -360,6 +368,52 @@ var INTERESTS = [
           '<li>作業する場所と、床の養生を用意した</li>' +
           '</ul>' +
           '<div class="tip"><b>ポイント</b><br>重いものをのせる棚は、板の長さが長いほどたわみます。真ん中に支えを一本足すと、安心です。</div>'
+      }
+    ]
+  }
+  ,{
+    id: 'trouble', name: 'トラブル対策', icon: ICON_TROUBLE,
+    note: 'もしものときの、記録のしかたと動き方',
+    memos: [
+      {
+        id: 't-record', date: '2026-10-01', tag: '記録',
+        title: '記録の書き方',
+        summary: '出来事を整理して、今後の配慮につなげるために',
+        body: `
+<p>「何が起きたのか」「それによって何が困っているのか」「今後どうしてほしいのか」を整理するために。</p>
+
+<h3>1. 分けて書くべきこと</h3>
+<ul>
+<li><strong>直接体験と伝聞を分ける</strong>:自分が直接言われた・見たことと、他の職員から伝え聞いたことは、はっきり区別して書く。</li>
+<li><strong>事実と受け止めを分ける</strong>:「実際に起きたこと」と「それを自分がどう感じたか(所感・解釈)」を、いったん切り離して書く。そうすることで、今後どう対応するかも考えやすくなる。</li>
+</ul>
+
+<h3>2. 記録に必ず含める要素</h3>
+<ul>
+<li>日付(できるだけ具体的に)</li>
+<li>具体的な発言や行動(誰が、その場で何を言った・したか)</li>
+<li>その前に、誰からどのような指示を受けていたか(経緯・発端)</li>
+<li>その後、誰に確認したか/その場に第三者がいたか</li>
+<li>自分の業務にどんな影響があったか</li>
+</ul>
+<div class="tip"><b>まとめ方</b><br>その上で、「今後どのような配慮を求めるのか」という形に整理する。</div>
+
+<h3>3. 体調面の変化</h3>
+<p>体調への影響も、記録として残しておく。仕事だけでなく体調にも影響が出ている、という事実そのものが重要な記録になる。</p>
+
+<h3>行動時のポイント</h3>
+<p><strong>指示や担当が曖昧なときは、そのまま判断して動かない。</strong></p>
+<p>「誰が修正するのか」「どこまで修正してよいのか」が曖昧な場合は、次のように、できるだけ確認を残してから動くようにした方が良いと思います。</p>
+<div class="tip"><b>確認のひとこと</b><br>「確認ですが、○○は私が対応し、△△については○○が対応するという理解でよろしいでしょうか」</div>
+
+<h3>「今後どのような配慮を求めるのか」の例</h3>
+<ul>
+<li>A職員と一対一で業務上の確認をすることを避けたい</li>
+<li>重要な業務指示や修正依頼は、できるだけメール等で明確にしてほしい</li>
+<li>誰が担当する業務なのかを明確にしてほしい</li>
+<li>必要な場合は第三者を交えて確認できるようにしてほしい</li>
+</ul>
+`
       }
     ]
   }
