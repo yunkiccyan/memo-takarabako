@@ -29,8 +29,6 @@ body { margin: 0; }
   --line: #D3DED8;
   --hydro: #187A5C;
   --hydro-soft: #DCEFE7;
-  --diy: #B5651A;
-  --diy-soft: #F6E6D2;
   --accent: var(--hydro);
   --accent-soft: var(--hydro-soft);
   --font-display: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Noto Sans JP", sans-serif;
@@ -45,8 +43,6 @@ body { margin: 0; }
     --line: #2A3B33;
     --hydro: #5CCBA2;
     --hydro-soft: #1B3A2E;
-    --diy: #EBA45E;
-    --diy-soft: #3F2C17;
     color-scheme: dark;
   }
 }
@@ -58,8 +54,6 @@ body { margin: 0; }
   --line: #2A3B33;
   --hydro: #5CCBA2;
   --hydro-soft: #1B3A2E;
-  --diy: #EBA45E;
-  --diy-soft: #3F2C17;
   color-scheme: dark;
 }
 
@@ -76,7 +70,6 @@ body {
 }
 .wrap { max-width: 40rem; margin-inline: auto; }
 [data-k="hydro"] { --accent: var(--hydro); --accent-soft: var(--hydro-soft); }
-[data-k="diy"] { --accent: var(--diy); --accent-soft: var(--diy-soft); }
 
 button { font: inherit; color: inherit; cursor: pointer; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
@@ -133,7 +126,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .tile .name { font-family: var(--font-display); font-weight: 700; font-size: 24px; line-height: 1.25; }
 .tile .count { color: var(--ink-sub); font-size: 15px; margin-top: auto; }
 .tile-text { display: flex; flex-direction: column; gap: 2px; margin-top: auto; }
-.foot-note { margin-top: 28px; color: var(--ink-sub); font-size: 14px; }
 
 /* メモ一覧 */
 .list-head { display: flex; align-items: center; gap: 14px; padding-block: 24px 14px; }
@@ -216,14 +208,13 @@ h4.crop { font-family: var(--font-display); font-size: 19px; line-height: 1.4; m
    (いまのメモは見本のダミーです)
 ---------------------------------------------------------------- */
 var ICON_HYDRO = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 52V30"/><path d="M32 36C32 25 25 20 15 20c0 11 7 16 17 16Z"/><path d="M32 31c0-10 7-15 17-15 0 10-7 15-17 15Z"/><path d="M8 56q6-5 12 0t12 0t12 0t12 0"/></svg>';
-var ICON_DIY = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="rotate(45 32 32)"><rect x="29" y="24" width="6" height="34" rx="2.5"/><rect x="17" y="10" width="30" height="12" rx="3"/></g></svg>';
 var ICON_BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
 var ICON_NEXT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 
 var INTERESTS = [
   {
-    id: 'hydro', name: '水耕栽培', icon: ICON_HYDRO,
-    note: '土を使わず、水と培養液で野菜を育てる',
+    id: 'hydro', name: '植物を育てる', icon: ICON_HYDRO,
+    note: '育てている植物のメモ',
     memos: [
       {
         id: 'h-light', date: '2026-10-01', tag: '光量',
@@ -300,68 +291,6 @@ var INTERESTS = [
 `
       }
     ]
-  },
-  {
-    id: 'diy', name: 'DIY', icon: ICON_DIY,
-    note: '木工や、暮らしの道具づくり',
-    memos: [
-      {
-        id: 'd1', sample: true, date: '2026-10-01', tag: '材料',
-        title: '木材の種類と使い分け',
-        summary: 'ホームセンターで選ぶときの、早見メモ',
-        body:
-          '<p>初めての工作では、手に入りやすく加工しやすい木から選ぶと失敗が少ないです。</p>' +
-          '<h3>よく使う木材</h3>' +
-          '<div class="spec"><table>' +
-          '<tr><th>SPF材</th><td>安くてやわらかい。2×4(ツーバイフォー)材が代表です。</td></tr>' +
-          '<tr><th>杉</th><td>軽くて切りやすい。やや傷つきやすいです。</td></tr>' +
-          '<tr><th>ヒノキ</th><td>香りがよく、水に強め。杉より少し高めです。</td></tr>' +
-          '<tr><th>合板</th><td>板状で大きい面をつくれます。棚板や背板に向きます。</td></tr>' +
-          '<tr><th>集成材</th><td>反りにくい。棚板やテーブルの天板に向きます。</td></tr>' +
-          '</table></div>' +
-          '<h3>サイズの呼び方</h3>' +
-          '<p>2×4材の実際の大きさは、約38×89mmです。呼び名の「2インチ×4インチ」より、小さくなっています。</p>' +
-          '<div class="tip"><b>ポイント</b><br>まっすぐな木を選ぶために、店で端から目を通して、反りやねじれを確かめます。</div>'
-      },
-      {
-        id: 'd2', sample: true, date: '2026-10-01', tag: '道具',
-        title: 'ビスの選び方と下穴の目安',
-        summary: '木が割れないようにするための、ひと手間',
-        body:
-          '<h3>ビスの長さの目安</h3>' +
-          '<p>ビスの長さは、<strong>とめる側の板の厚みの2倍以上</strong>が基本です。たとえば厚さ19mmの板をとめるなら、38mm前後のビスを選びます。</p>' +
-          '<h3>下穴をあける</h3>' +
-          '<p>板の端に近い所や、かたい木は、下穴をあけないと割れやすくなります。</p>' +
-          '<ul>' +
-          '<li>下穴の太さは、ビスの軸の太さより少し細いものが目安です。</li>' +
-          '<li>かたい木ほど、下穴は太めにします。</li>' +
-          '<li>端から、ビスの太さの3〜5倍は離すと割れにくくなります。</li>' +
-          '</ul>' +
-          '<h3>あると便利なもの</h3>' +
-          '<ul>' +
-          '<li>下穴用のドリルビット</li>' +
-          '<li>さらもみ(頭を沈める)ビット</li>' +
-          '<li>クランプ(板を押さえる道具)</li>' +
-          '</ul>'
-      },
-      {
-        id: 'd3', sample: true, date: '2026-10-01', tag: '準備',
-        title: '棚を作る前のチェックリスト',
-        summary: '買い物に行く前に、見直すこと',
-        body:
-          '<p>作りはじめる前に、次の点を確かめておくと、手戻りが減ります。</p>' +
-          '<ul class="check">' +
-          '<li>置く場所の幅・高さ・奥行きを、メジャーで測った</li>' +
-          '<li>何をのせるか決めた(本、鉢、道具など)</li>' +
-          '<li>のせるものの重さを、おおよそ見積もった</li>' +
-          '<li>木材の寸法を、紙に書き出した</li>' +
-          '<li>切る長さを、店のカットサービスに頼めるか確かめた</li>' +
-          '<li>ビス、やすり、塗料を、買い物リストに入れた</li>' +
-          '<li>作業する場所と、床の養生を用意した</li>' +
-          '</ul>' +
-          '<div class="tip"><b>ポイント</b><br>重いものをのせる棚は、板の長さが長いほどたわみます。真ん中に支えを一本足すと、安心です。</div>'
-      }
-    ]
   }
 ];
 
@@ -395,7 +324,6 @@ function renderHome() {
   return '<div class="view">' +
     '<header class="home-head"><h1>メモの宝箱</h1><p>いま気になっていること</p></header>' +
     '<div class="tiles">' + tiles + '</div>' +
-    '<p class="foot-note">DIYのメモは、見本のダミーです。</p>' +
     '</div>';
 }
 
